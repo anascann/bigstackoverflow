@@ -1,6 +1,13 @@
 const express=require('express')
 const mongoose=require('mongoose');
+const bodyparser=require('body-parser');
+const auth=require('./routes/api/auth')
+const profile=require('./routes/api/profile');
+const questions=require('./routes/api/questions');
 const app=express();
+
+app.use(bodyparser.urlencoded({extended:false}));
+app.use(bodyparser.json());
 
 const db=require('./setup/mongourl').mongoURL
 
@@ -9,6 +16,11 @@ mongoose.connect(db).then(()=>{
 }).catch(err=>{
     console.log(err)
 });
+
+app.use('/api/auth',auth);
+
+app.use('/api/profile',profile);
+app.use('/api/questions',questions);
 const port=process.env.PORT || 3000;
 
 app.get('/',(req,res)=>{
