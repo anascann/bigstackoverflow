@@ -22,6 +22,11 @@ const PersonSchema=new Schema({
         default:'https://pixabay.com/photos/ballet-dancer-oudoors-elegant-5415806/'
     },
 
+    gender:{
+        type:String,
+        required:true
+    },
+
     date:{
         type: Date,
         default: Date.now()

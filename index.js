@@ -4,6 +4,7 @@ const bodyparser=require('body-parser');
 const auth=require('./routes/api/auth')
 const profile=require('./routes/api/profile');
 const questions=require('./routes/api/questions');
+const passport=require('passport');
 const app=express();
 
 app.use(bodyparser.urlencoded({extended:false}));
@@ -16,6 +17,10 @@ mongoose.connect(db).then(()=>{
 }).catch(err=>{
     console.log(err)
 });
+
+app.use(passport.initialize());
+
+require('./strategies/jsonwtStrategies')(passport);
 
 app.use('/api/auth',auth);
 
