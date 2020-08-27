@@ -96,6 +96,34 @@ router.get('/:username',(req,res)=>{
                 .catch(err=>console.log(err))
     })
 
+    router.post('/mywork',passport.authenticate('jwt',{session:false}),(req,res)=>{
+        Profile.findOne({user:req.user.id})
+        .then(profile=>{
+            if(!profile){
+                res.status(404).json({usernotfound:'not found'});
+            }
+
+            const newWork={
+                role:req.body.role,
+                company: req.body.company,
+                country: req.body.country,
+                from: req.body.from,
+                ro:req.body.to,
+                current: req.body.current,
+                details:req.body.details
+            };
+
+            profile.workrole.push(newWork);
+            profile.save()
+            .then(profile=>res.json(profile))
+                .catch(err=>console.log(err))
+
+        })
+            .catch(err=>console.log(err))
+    }
+
+    )
+
 
 
 module.exports=router;
