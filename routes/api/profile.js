@@ -124,6 +124,28 @@ router.get('/:username',(req,res)=>{
 
     )
 
+    router.delete('workrole/:w_id',
+    passport.authenticate('jwt',{session:false}),(req,res)=>{
+        Profile.findOne({user:req.user.id})
+        .then(profile=>{
+            if(!profile){
+                res.status(404).json({usernotfound:'Not found'});
+            }
+
+            const removethis=profile.workrole
+            .map(item=>item.id)
+            .indexOf(req.params.w_id);
+
+            profile.workrole.splice(removethis,1);
+
+            profile.save()
+            .then(profile=>res.json(profile)).catch(err=>console.log(err))
+
+
+        })
+            .catch(err=>console.log(err))
+    })
+
 
 
 module.exports=router;
