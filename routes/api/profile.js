@@ -82,6 +82,20 @@ router.get('/:username',(req,res)=>{
     .catch(err=>console.log('error in fetching username '+err))
 })
 
+    router.delete('/',
+    passport.authenticate('jwt',{session:false}),(req,res)=>{
+        Profile.findOne({user:req.user.id})
+        Profile.findOneAndRemove({user:req.user.id})
+            .then(()=>{
+                Person.findOneAndRemove({_id:req.user.id})
+                .then(()=>{
+                    res.json({success:'delete was a success'})
+                })
+                    .catch(err=>console.log(err))
+            })
+                .catch(err=>console.log(err))
+    })
+
 
 
 module.exports=router;
