@@ -30,13 +30,58 @@ router.post(
         if(typeof req.body.languages !==undefined){
             profilevalues.languages=req.body.languages.split(',');
         }
-        if(req.body.youtube)profilevalues.youtube=req.body.youtube;
-        if(req.body.instagram)profilevalues.instagram=req.body.instagram;
-        if(req.body.facebook)profilevalues.facebook=req.body.facebook;
 
+        profilevalues.social={};
+        if(req.body.youtube)profilevalues.social.youtube=req.body.youtube;
+        if(req.body.instagram)profilevalues.social.instagram=req.body.instagram;
+        if(req.body.facebook)profilevalues.social.facebook=req.body.facebook;
+
+        Profile.findOne({user: req.user.id})
+            .then(profile=>{
+                if(profile){
+                    Profile.findOneAndUpdate(
+                        {user:req.user.id},
+                        {$set: profilevalues},
+                        {new:"true"}
+                    )
+                    .then(profile=>res.json(profile))
+                    .catch(err=>console.log('problem in update '+err));
+                }else{
+                    Profile.findOne({username:profilevalues.username})
+                    .then(profile=>{
+                        if(profile){
+                            res.status(400).json({username:'Username Already exists'})
+
+                        }
+
+                        new Profile(profilevalues)
+                        .save()
+                        .then(profile=>{
+                            res.json(profile)
+                        })
+                        .catch(err=>console.log(err));
+                    })
+                    .catch(err=>console.log(err))
+                }
+            })
+                .catch(err=>console.log('Problem in fethcing '+ err));
 
 
     }
 )
+
+router.get('/:username',(req,res)=>{
+    Profile.findOne({username:req.params.username})
+    .populate("user",["name","profilepic"])
+    .then(profile=>{
+        if(!profile){
+            res.status(404).json({usernotfound:'user not found'})
+        }
+        res.json(profile);
+    })
+    .catch(err=>console.log('error in fetching username '+err))
+})
+
+
 
 module.exports=router;
